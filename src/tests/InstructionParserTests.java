@@ -22,7 +22,6 @@ public class InstructionParserTests {
         int[] correctArgs = {1, 1, 4, 5};
         Command correctCommand = Command.ADD;
         Instruction correctInstruction = new Instruction(correctCommand, correctArgs);
-
         Instruction ins = ip.parse(valid);
 
         assertThat(ins, is(correctInstruction));
