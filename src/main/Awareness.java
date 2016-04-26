@@ -19,5 +19,17 @@ public class Awareness {
         Board board = new Board(worldx, worldy);
         System.out.println(board);
 
+        InstructionParser instructionParser = new InstructionParser();
+
+        boolean exited = false;
+        while (!exited){
+
+
+
+
+
+
+        }
+
     }
 }
