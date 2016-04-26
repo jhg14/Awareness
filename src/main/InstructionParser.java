@@ -10,8 +10,9 @@ public class InstructionParser {
     public Instruction parse(String input) {
         StringTokenizer tokenizer = new StringTokenizer(input);
         while (tokenizer.hasMoreElements()){
-            
+
         }
+        return null;
     }
 
 }
