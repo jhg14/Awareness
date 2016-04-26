@@ -26,9 +26,6 @@ public class InstructionParserTests {
         Instruction ins = ip.parse(valid);
 
         assertThat(ins, is(correctInstruction));
-
-
-
     }
 
     @Test

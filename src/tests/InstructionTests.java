@@ -1,6 +1,10 @@
 package tests;
 
+import main.Command;
+import main.Instruction;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by JHGWhite on 26/04/2016.
@@ -8,7 +12,12 @@ import org.junit.Test;
 public class InstructionTests {
 
     @Test
-    public void instructionEqualityFunctionWorkingInTrueCase() {}
+    public void instructionEqualityFunctionWorkingInTrueCase() {
+        Instruction ins1 = new Instruction(Command.ADD, new int[]{1 ,1, 4, 5});
+        Instruction ins2 = new Instruction(Command.ADD, new int[]{1, 1, 4, 5});
+
+        assertTrue(ins1.equals(ins2));
+    }
 
     @Test
     public void instructionEqualityFunctionWorkingInFalseCase() {}
