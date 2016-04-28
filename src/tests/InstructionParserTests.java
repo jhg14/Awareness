@@ -3,6 +3,7 @@ package tests;
 import main.Command;
 import main.Instruction;
 import main.InstructionParser;
+import main.InvalidInstructionException;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,14 +28,13 @@ public class InstructionParserTests {
         assertThat(ins, is(correctInstruction));
     }
 
-    @Test
+    @Test(expected = InvalidInstructionException.class)
     public void parsesInvalidInputByReturningException() {
         String invalid = "1 2 3 ZZZ";
+        //Might need to differentiate between argument and command exception?
 
-        //Check for throwing a InvalidCommandException
+        ip.parse(invalid);
 
     }
 
 }
-
-// INSTRUCTION .EQUALS TEST

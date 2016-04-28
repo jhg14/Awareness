@@ -33,4 +33,14 @@ public class Instruction {
         result = 31 * result + (cmd != null ? cmd.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        String command = cmd.toString();
+        String args = "";
+        for (int i = 0; i < arguments.length; i++) {
+            args+= arguments[i] + " ";
+        }
+        return args + command;
+    }
 }

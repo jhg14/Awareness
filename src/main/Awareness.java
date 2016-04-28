@@ -16,20 +16,26 @@ public class Awareness {
         System.out.println("Please enter the height of your desired world: ");
         worldy = s.nextInt();
 
+        //Change to command line arguments
+
         Board board = new Board(worldx, worldy);
         System.out.println(board);
 
-        String validEnum = "DOOR";
-        String invalidEnum = "BOOR";
-        System.out.println(Command.valueOf(validEnum));
-        System.out.println(Command.valueOf(invalidEnum));
-
-
         InstructionParser instructionParser = new InstructionParser();
 
-        boolean exited = false;
-        while (!exited){
+        while (s.hasNext()){
 
+            //Parse the input
+            String input = s.nextLine();
+            System.out.println(input);
+            //Instruction ins = instructionParser.parse(input);
+
+            //System.out.println(ins);
+
+
+            //Change the board
+
+            //Print out the state of the board
         }
 
     }
