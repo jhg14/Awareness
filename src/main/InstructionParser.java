@@ -1,5 +1,7 @@
 package main;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -23,12 +25,12 @@ public class InstructionParser {
 
         Instruction instruction = new Instruction(cmd, args);
         return instruction;
-
-
     }
 
     private Command parseCommand(String cmd) {
-        return Command.valueOf(cmd);
+        Command c = Command.valueOf(cmd);
+        return c;
+        //Can throw IllegalArgumentException
     }
 
     private int[] parseArgs(List<String> args) {

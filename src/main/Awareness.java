@@ -19,15 +19,16 @@ public class Awareness {
         Board board = new Board(worldx, worldy);
         System.out.println(board);
 
+        String validEnum = "DOOR";
+        String invalidEnum = "BOOR";
+        System.out.println(Command.valueOf(validEnum));
+        System.out.println(Command.valueOf(invalidEnum));
+
+
         InstructionParser instructionParser = new InstructionParser();
 
         boolean exited = false;
         while (!exited){
-
-
-
-
-
 
         }
 

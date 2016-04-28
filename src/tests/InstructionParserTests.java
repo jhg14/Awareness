@@ -28,7 +28,10 @@ public class InstructionParserTests {
     }
 
     @Test
-    public void parsesInvalidInputByReturning() {
+    public void parsesInvalidInputByReturningException() {
+        String invalid = "1 2 3 ZZZ";
+
+        //Check for throwing a InvalidCommandException
 
     }
 
