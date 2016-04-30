@@ -15,6 +15,14 @@ public class Instruction {
         this.arguments = arguments;
     }
 
+    public Command getCommand() {
+        return cmd;
+    }
+
+    public int[] getArguments() {
+        return arguments;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

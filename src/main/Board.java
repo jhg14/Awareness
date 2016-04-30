@@ -18,10 +18,33 @@ public class Board {
         initBoard();
     }
 
+    //Account of out of board size accesses
+    public Board applyInstruction (Instruction i) {
+        switch (i.getCommand()) {
+            case ADD:
+                int[] args = i.getArguments();
+                return add(args[0], args[1], args [2], args[3]);
+            case REMOVE:
+                break;
+            case EXIT:
+                break;
+            case DOOR:
+                break;
+        }
+        return null;
+    }
+
     private void initBoard(){
         for (int j = 0; j < tiles.length; j++){
             Arrays.fill(tiles[j], '_');
         }
+    }
+
+    private Board add (int x, int y, int width, int height) {
+
+        tiles[y][x] = 'W';
+
+        return this;
     }
 
     @Override
@@ -35,5 +58,7 @@ public class Board {
         }
         return builder.toString();
     }
+
+
 
 }

@@ -42,7 +42,9 @@ public class Awareness {
                 continue;
             }
 
-            System.out.println(ins);
+            board.applyInstruction(ins);
+
+            System.out.println(board);
 
 
             //Change the board
