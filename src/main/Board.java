@@ -14,7 +14,7 @@ public class Board {
     public Board(int x, int y){
         this.x = x;
         this.y = y;
-        tiles = new char[y][x];
+        tiles = new char[x][y];
         initBoard();
     }
 
@@ -42,7 +42,17 @@ public class Board {
 
     private Board add (int x, int y, int width, int height) {
 
-        tiles[y][x] = 'W';
+        //if x/y == x/y or x+width/y+height?
+
+        for (int i = x; i < x+width; i++) {
+            for (int j = y; j < y+height; j++) {
+                if (i == x || j == y || i == (x+width-1) || j == (y+height-1)){
+                    tiles[i][j] = 'w';
+                } else {
+                    tiles[i][j] = 'A';
+                }
+            }
+        }
 
         return this;
     }
@@ -50,9 +60,9 @@ public class Board {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (int j = 0; j < y; j++){
+        for (int j = y-1; j >= 0; j--){
             for (int i = 0; i < x; i++){
-                builder.append(tiles[j][i]);
+                builder.append(tiles[i][j]);
             }
             builder.append('\n');
         }
