@@ -1,5 +1,7 @@
 package main;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Scanner;
 
 /**
@@ -9,16 +11,20 @@ import java.util.Scanner;
 public class Awareness {
 
     public static void main(String[] args) {
-        Scanner s = new Scanner(System.in);
         int worldx, worldy;
-        System.out.println("Please enter the width of your desired world: ");
-        worldx = s.nextInt();
-        System.out.println("Please enter the height of your desired world: ");
-        worldy = s.nextInt();
+        worldx = Integer.valueOf(args[0]);
+        worldy = Integer.valueOf(args[1]);
+        //check for invalid input
 
-        //Change to command line arguments
+        run(worldx, worldy, System.in, System.out);
 
-        Board board = new Board(worldx, worldy);
+    }
+
+    public static void run(int x, int y, InputStream in, OutputStream out) {
+
+        Scanner s = new Scanner(in);
+
+        Board board = new Board(x, y);
         System.out.println(board);
 
         InstructionParser instructionParser = new InstructionParser();
@@ -27,8 +33,6 @@ public class Awareness {
 
             //Parse the input
             String input = s.nextLine();
-            System.out.println(input.length());
-            System.out.println(input);
 
             Instruction ins;
             try {

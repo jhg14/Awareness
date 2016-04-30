@@ -20,7 +20,6 @@ public class InstructionParser {
             tokens.add(tokenizer.nextToken());
 
         }
-        System.out.println(tokens.size());
         /* Parse the command - it is always the last token */
 
         Command cmd;
