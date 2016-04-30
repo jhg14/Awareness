@@ -12,6 +12,8 @@ public class Board {
     private static final int ALPHABET_START_DEC = 65;
     private static final int ALPHABET_END_DEC = 90;
 
+    private static final char PLACEHOLDER = '%';
+
 
     private char[] alphabet = new char[ALPHABET_SIZE];
     private boolean[] alphaBitmap = new boolean[ALPHABET_SIZE];
@@ -51,13 +53,12 @@ public class Board {
     }
 
     private Board add (int x, int y, int width, int height) {
-
         for (int i = x; i < x+width; i++) {
             for (int j = y; j < y+height; j++) {
                 if (i == x || j == y || i == (x+width-1) || j == (y+height-1)){
                     tiles[i][j] = 'w';
                 } else {
-                    tiles[i][j] = 'A';
+                    tiles[i][j] = PLACEHOLDER;
                 }
             }
         }
@@ -91,7 +92,30 @@ public class Board {
         }
     }
 
-    //private char getLetter(){}
+    private char getLetter(){
+        for (int i = 0; i < alphaBitmap.length; i++) {
+            if (!alphaBitmap[i]) {
+                alphaBitmap[i] = true;
+                return alphabet[i];
+            }
+        }
+        return '#';
+    }
+//
+//    private void replaceEnclosure() {
+//        for (int i = 0; i < x; i++) {
+//            for (int j = 0; j < y; j++) {
+//                if ()
+//            }
+//        }
+//    }
+
+    private boolean isLetter(char c) {
+        return (c >= ALPHABET_START_DEC) && (c >= ALPHABET_END_DEC);
+    }
+    private boolean isEdge(int i, int j) {
+        return (i == 0 || j == 0 || i == (x-1) || j == (y-1));
+    }
 
 
 }
