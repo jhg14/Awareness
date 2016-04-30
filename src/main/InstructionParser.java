@@ -1,5 +1,7 @@
 package main;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -9,14 +11,24 @@ import java.util.StringTokenizer;
  */
 public class InstructionParser {
 
-    public Instruction parse(String input) {
+    public Instruction parse(String input) throws InvalidInstructionException {
+        //Pre: string is of format <x x x x COM> <x x DOOR>
+        //Post: returns Instruction: arguments = {x, x, x, x}, cmd = Command.COM
         List<String> tokens = new ArrayList<>();
         StringTokenizer tokenizer = new StringTokenizer(input);
         while (tokenizer.hasMoreElements()){
             tokens.add(tokenizer.nextToken());
+
         }
+        System.out.println(tokens.size());
         /* Parse the command - it is always the last token */
-        Command cmd = parseCommand(tokens.remove(tokens.size()-1));
+
+        Command cmd;
+        try {
+            cmd = parseCommand(tokens.remove(tokens.size()-1));
+        } catch (IllegalArgumentException e) {
+            throw new InvalidInstructionException(e.getMessage());
+        }
 
         /* Parse the arguments */
         int[] args = parseArgs(tokens);
@@ -26,9 +38,7 @@ public class InstructionParser {
     }
 
     private Command parseCommand(String cmd) {
-        Command c = Command.valueOf(cmd);
-        return c;
-        //Can throw InvalidInstruction
+        return Command.valueOf(cmd);
     }
 
     private int[] parseArgs(List<String> args) {

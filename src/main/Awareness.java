@@ -27,10 +27,18 @@ public class Awareness {
 
             //Parse the input
             String input = s.nextLine();
+            System.out.println(input.length());
             System.out.println(input);
-            //Instruction ins = instructionParser.parse(input);
 
-            //System.out.println(ins);
+            Instruction ins;
+            try {
+                ins = instructionParser.parse(input);
+            } catch (InvalidInstructionException e) {
+                System.out.println("Dodgy input - try again");
+                continue;
+            }
+
+            System.out.println(ins);
 
 
             //Change the board
