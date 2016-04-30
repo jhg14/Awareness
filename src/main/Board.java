@@ -7,6 +7,15 @@ import java.util.Arrays;
  */
 public class Board {
 
+    private static final int ALPHABET_SIZE = 26;
+
+    private static final int ALPHABET_START_DEC = 65;
+    private static final int ALPHABET_END_DEC = 90;
+
+
+    private char[] alphabet = new char[ALPHABET_SIZE];
+    private boolean[] alphaBitmap = new boolean[ALPHABET_SIZE];
+
     private char[][] tiles;
     private int x;
     private int y;
@@ -15,17 +24,18 @@ public class Board {
         this.x = x;
         this.y = y;
         tiles = new char[x][y];
+        populateAlphabet();
         initBoard();
     }
 
     //Account of out of board size accesses
     public Board applyInstruction (Instruction i) {
+        int[] args = i.getArguments();
         switch (i.getCommand()) {
             case ADD:
-                int[] args = i.getArguments();
                 return add(args[0], args[1], args [2], args[3]);
             case REMOVE:
-                break;
+                return remove(args[0], args[1], args [2], args[3]);
             case EXIT:
                 break;
             case DOOR:
@@ -42,8 +52,6 @@ public class Board {
 
     private Board add (int x, int y, int width, int height) {
 
-        //if x/y == x/y or x+width/y+height?
-
         for (int i = x; i < x+width; i++) {
             for (int j = y; j < y+height; j++) {
                 if (i == x || j == y || i == (x+width-1) || j == (y+height-1)){
@@ -53,14 +61,22 @@ public class Board {
                 }
             }
         }
+        return this;
+    }
 
+    private Board remove(int x, int y, int width, int height) {
+        for (int i = x; i < x+width; i++) {
+            for (int j = y; j < y+height; j++) {
+                tiles[i][j] = '_';
+            }
+        }
         return this;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (int j = y-1; j >= 0; j--){
+        for (int j = 0; j < y; j++){
             for (int i = 0; i < x; i++){
                 builder.append(tiles[i][j]);
             }
@@ -69,6 +85,13 @@ public class Board {
         return builder.toString();
     }
 
+    private void populateAlphabet() {
+        for (int letter = ALPHABET_START_DEC; letter <= ALPHABET_END_DEC; letter++) {
+            alphabet[letter-ALPHABET_START_DEC] = (char) letter;
+        }
+    }
+
+    //private char getLetter(){}
 
 
 }

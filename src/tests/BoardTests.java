@@ -22,6 +22,9 @@ public class BoardTests {
     private String b1
             = "______\n_wwww_\n_wAAw_\n_wAAw_\n_wwww_\n______\n";
 
+    private String b2
+            = "______\n_wwww_\n_w__w_\n_w____\n_ww___\n______\n";
+
     @Test
     public void blankBoardIsCorrectlyInitialised() {
         board = new Board(5, 7);
@@ -29,11 +32,20 @@ public class BoardTests {
     }
 
     @Test
-    public void applyingInstructionGivenInSpecReturnsAnswerGivenInSpec () {
+    public void applyingAddInstructionGivenInSpecReturnsAnswerGivenInSpec() {
         board = new Board(6, 6);
         board.applyInstruction(new Instruction(Command.ADD, new int[]{1, 1, 4, 4}));
 
         assertThat(board.toString(), is(b1));
+    }
+
+    @Test
+    public void applyingRemoveInstructionGivenInSpecReturnsAnswerGivenInSpec() {
+        board = new Board(6, 6);
+        board.applyInstruction(new Instruction(Command.ADD, new int[]{1, 1, 4, 4}));
+        board.applyInstruction(new Instruction(Command.REMOVE, new int[]{3, 3, 2, 2}));
+
+        assertThat(board.toString(), is(b2));
     }
 
 }
