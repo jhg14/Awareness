@@ -19,6 +19,7 @@ public class Board {
     private boolean[] alphaBitmap = new boolean[ALPHABET_SIZE];
 
     private char[][] tiles;
+    private boolean[][] doors;
     private int x;
     private int y;
 
@@ -26,11 +27,12 @@ public class Board {
         this.x = x;
         this.y = y;
         tiles = new char[x][y];
+        doors = new boolean[x][y];
         populateAlphabet();
         initBoard();
     }
 
-    //Account of out of board size accesses
+    //Account for out of board size accesses
     public Board applyInstruction (Instruction i) {
         int[] args = i.getArguments();
         switch (i.getCommand()) {
@@ -41,7 +43,7 @@ public class Board {
             case EXIT:
                 break;
             case DOOR:
-                break;
+                return addDoor(args[0], args[1]);
         }
         return null;
     }
@@ -62,6 +64,7 @@ public class Board {
                 }
             }
         }
+        replaceEnclosure();
         return this;
     }
 
@@ -71,6 +74,13 @@ public class Board {
                 tiles[i][j] = '_';
             }
         }
+        replaceEnclosure();
+        return this;
+    }
+
+    private Board addDoor(int x, int y) {
+
+        doors[x][y] = true;
         return this;
     }
 
@@ -101,14 +111,27 @@ public class Board {
         }
         return '#';
     }
-//
-//    private void replaceEnclosure() {
-//        for (int i = 0; i < x; i++) {
-//            for (int j = 0; j < y; j++) {
-//                if ()
-//            }
-//        }
-//    }
+
+    private void updateSpaces() {
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < y; j++) {
+                if (!isEdge(i, j)) {
+                    if (tiles[])
+                }
+            }
+        }
+    }
+
+    private void replaceEnclosure() {
+        char letter = getLetter();
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < y; j++) {
+                if (tiles[i][j] == PLACEHOLDER) {
+                    tiles[i][j] = letter;
+                }
+            }
+        }
+    }
 
     private boolean isLetter(char c) {
         return (c >= ALPHABET_START_DEC) && (c >= ALPHABET_END_DEC);
