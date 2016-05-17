@@ -112,15 +112,14 @@ public class Board {
         return '#';
     }
 
-    private void updateSpaces() {
-        for (int i = 0; i < x; i++) {
-            for (int j = 0; j < y; j++) {
-                if (!isEdge(i, j)) {
-                    if (tiles[])
-                }
-            }
-        }
-    }
+//    private void updateSpaces() {
+//        for (int i = 0; i < x; i++) {
+//            for (int j = 0; j < y; j++) {
+//                if (!isEdge(i, j)) {
+//                }
+//            }
+//        }
+//    }
 
     private void replaceEnclosure() {
         char letter = getLetter();
