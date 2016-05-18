@@ -21,19 +21,27 @@ public class World {
         initWorld();
     }
 
-    public List<Character> getAdjacentTiles(int x, int y) {
-        List<Character> adj = new ArrayList<>();
+//    public List<Character> getAdjacentTiles(int x, int y) {
+//        List<Character> adj = new ArrayList<>();
+//
+//        for(int i = x-1; i <= x+1; i++) {
+//            for (int j = y-1; j <= y+1; j++) {
+//                try {
+//                    if (!(x == i && y == j))
+//                    adj.add(tiles[i][j]);
+//                } catch (ArrayIndexOutOfBoundsException e) {
+//                }
+//            }
+//        }
+//        return adj;
+//    }
 
-        for(int i = x-1; i <= x+1; i++) {
-            for (int j = y-1; j <= y+1; j++) {
-                try {
-                    if (!(x == i && y == j))
-                    adj.add(tiles[i][j]);
-                } catch (ArrayIndexOutOfBoundsException e) {
-                }
-            }
-        }
-        return adj;
+    public void setTile(int i, int j, char c) {
+        tiles[i][j] = c;
+    }
+
+    public char getTile(int i, int j) {
+        return tiles[i][j];
     }
 
     private void initWorld(){
@@ -45,6 +53,18 @@ public class World {
 
     private boolean isEdge(int i, int j) {
         return (i == 0 || j == 0 || i == (x-1) || j == (y-1));
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (int j = 0; j < y; j++){
+            for (int i = 0; i < x; i++){
+                builder.append(tiles[i][j]);
+            }
+            builder.append('\n');
+        }
+        return builder.toString();
     }
 
 }
