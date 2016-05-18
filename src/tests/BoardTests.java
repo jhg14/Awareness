@@ -48,24 +48,4 @@ public class BoardTests {
         assertThat(board.toString(), is(b2));
     }
 
-    @Test
-    public void removalOfInvalidTbdsCorrectlyReducesToEnclosures () {
-        board = new Board(8, 7);
-        String withoutInvalidTbds
-                = "________\n" +
-                  "__wwww__\n" +
-                  "__w%%w__\n" +
-                  "__w%%w__\n" +
-                  "__wwww__\n" +
-                  "________\n" +
-                  "________\n";
-
-        board.applyInstruction(new Instruction(Command.ADD, new int[]{2, 1, 4, 4}));
-        board.removeInvalidTbdTiles();
-
-        assertThat(board.toString(), is(withoutInvalidTbds));
-
-    }
-
-
 }

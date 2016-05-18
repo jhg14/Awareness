@@ -66,11 +66,7 @@ public class Board {
             for (int j = y; j < y+height; j++) {
                 if (i == x || j == y || i == (x+width-1) || j == (y+height-1)){
                     tiles[i][j] = 'w';
-                    //world.setTile(i, j, 'w');
-                } //else {
-//                    tiles[i][j] = PLACEHOLDER;
-//                    //world.setTile(i, j, PLACEHOLDER);
-//                }
+                }
             }
         }
         //detectEnclosure();
@@ -78,6 +74,7 @@ public class Board {
         //updateSpaces();
         markAllButWallsAsTbd();
         removeInvalidTbdTiles();
+        allocateEnclosure();
 
         return this;
     }
@@ -91,6 +88,7 @@ public class Board {
         }
         markAllButWallsAsTbd();
         removeInvalidTbdTiles();
+        allocateEnclosure();
 
         return this;
     }
@@ -117,6 +115,12 @@ public class Board {
         return '#';
     }
 
+    private void freeLetters() {
+        for (int i = 0; i < alphaBitmap.length; i++) {
+            alphaBitmap[i] = false;
+        }
+    }
+
     private void markAllButWallsAsTbd() {
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
@@ -139,7 +143,7 @@ public class Board {
         //Replace edge tiles with '_'
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
-                if (isEdge(i, j)) tiles[i][j] = '_';
+                if (isEdge(i, j) && (tiles[i][j] != 'w')) tiles[i][j] = '_';
             }
         }
 
@@ -190,20 +194,18 @@ public class Board {
     }
 
     private void allocateEnclosure() {
+
         ReplacementNode[][] nodes = new ReplacementNode[x][y];
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
                 if (tiles[i][j] == PLACEHOLDER){
-                    nodes[i][j] = new ReplacementNode();
+                    nodes[i][j] = new ReplacementNode(i, j);
                 }
             }
         }
 
-        List<List<ReplacementNode>> groups = new ArrayList<>();
-
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
-
                 if (nodes[i][j] != null) {
 
                     List<ReplacementNode> adjacent = getAdjacentTiles(i, j, nodes);
@@ -212,23 +214,36 @@ public class Board {
                     int j_ = j;
                     adjacent.forEach((n) -> {
                         if (n != null) {
-                            List<ReplacementNode> comb = n.mergeGroup(nodes[i_][j_].getGroup());
-                            n.setGroup(comb);
-                            nodes[i_][j_].setGroup(comb);
+                            nodes[i_][j_].mergeAndSetGroup(n);
                         }
                     });
+                }
+            }
+        }
 
+        List<List<ReplacementNode>> groups = new ArrayList<>();
+
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < y; j++) {
+                ReplacementNode node = nodes[i][j];
+                if (node != null) {
                     if (!groups.contains(nodes[i][j].getGroup())) {
                         groups.add(nodes[i][j].getGroup());
                     }
                 }
-
             }
         }
-        System.out.println("The number of different groups is: ");
-        System.out.println(groups.size());
-        System.out.println(groups);
 
+
+
+        freeLetters();
+        //Assign letters
+        for (List<ReplacementNode> group: groups) {
+            char letter = getLetter();
+            group.forEach((n) -> {
+                tiles[n.getX()][n.getY()] = letter;
+            });
+        }
     }
 
     private void replaceEnclosure() {
