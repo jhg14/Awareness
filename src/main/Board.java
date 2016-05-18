@@ -67,14 +67,18 @@ public class Board {
                 if (i == x || j == y || i == (x+width-1) || j == (y+height-1)){
                     tiles[i][j] = 'w';
                     //world.setTile(i, j, 'w');
-                } else {
-                    tiles[i][j] = PLACEHOLDER;
-                    //world.setTile(i, j, PLACEHOLDER);
-                }
+                } //else {
+//                    tiles[i][j] = PLACEHOLDER;
+//                    //world.setTile(i, j, PLACEHOLDER);
+//                }
             }
         }
+        //detectEnclosure();
         //replaceEnclosure();
-        updateSpaces();
+        //updateSpaces();
+        markAllButWallsAsTbd();
+        removeInvalidTbdTiles();
+
         return this;
     }
 
@@ -85,8 +89,9 @@ public class Board {
                 //world.setTile(i, j, '_');
             }
         }
-        //replaceEnclosure();
-        updateSpaces();
+        markAllButWallsAsTbd();
+        removeInvalidTbdTiles();
+
         return this;
     }
 
@@ -112,6 +117,60 @@ public class Board {
         return '#';
     }
 
+    private void markAllButWallsAsTbd() {
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < y; j++) {
+                if (tiles[i][j] != 'w') {
+                    tiles[i][j] = PLACEHOLDER;
+                }
+            }
+        }
+    }
+
+
+    /* Every space has been marked as PLACEHOLDER
+       1. Anything that is an edge, mark '_'
+       2. Anything that is next to a '_', make '_'
+           2.1. Until you reach a 'w'
+       3. Repeat steps 2 & 3 until no change
+     */
+    public void removeInvalidTbdTiles() {
+
+        //Replace edge tiles with '_'
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < y; j++) {
+                if (isEdge(i, j)) tiles[i][j] = '_';
+            }
+        }
+
+        //If a tile is connected to one of these newly created '_' tiles,
+        //it must not be enclosed so replace those too.
+        int change = -1;
+        while (change != 0) {
+            change = 0;
+            for (int i = 0; i < x; i++) {
+                for (int j = 0; j < y; j++) {
+                    if (tiles[i][j] != 'w' && tiles[i][j] != '_') {
+                        List<Character> adj = getAdjacentTilesChar(i, j, tiles);
+                        boolean adjacentToEmpty = false;
+
+                        for (Character c : adj) {
+                            if (c.charValue() == '_') {
+                                adjacentToEmpty = true;
+                            }
+                        }
+
+                        if (adjacentToEmpty) {
+                            tiles[i][j] = '_';
+                            change++;
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
     private void updateSpaces() {
 
         int changes = -1;
@@ -130,7 +189,7 @@ public class Board {
         }
     }
 
-    private void detectEnclosure() {
+    private void allocateEnclosure() {
         ReplacementNode[][] nodes = new ReplacementNode[x][y];
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
@@ -144,24 +203,31 @@ public class Board {
 
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
-                List<ReplacementNode> adjacent = getAdjacentTiles(i, j, nodes);
 
-                int i_ = i;
-                int j_ = j;
-                adjacent.forEach((n) -> {
-                    List<ReplacementNode> comb = n.mergeGroup(nodes[i_][j_].getGroup());
-                    n.setGroup(comb);
-                    nodes[i_][j_].setGroup(comb);
-                });
+                if (nodes[i][j] != null) {
 
-                if (!groups.contains(nodes[i][j].getGroup())) {
-                    groups.add(nodes[i][j].getGroup());
+                    List<ReplacementNode> adjacent = getAdjacentTiles(i, j, nodes);
+
+                    int i_ = i;
+                    int j_ = j;
+                    adjacent.forEach((n) -> {
+                        if (n != null) {
+                            List<ReplacementNode> comb = n.mergeGroup(nodes[i_][j_].getGroup());
+                            n.setGroup(comb);
+                            nodes[i_][j_].setGroup(comb);
+                        }
+                    });
+
+                    if (!groups.contains(nodes[i][j].getGroup())) {
+                        groups.add(nodes[i][j].getGroup());
+                    }
                 }
 
             }
         }
         System.out.println("The number of different groups is: ");
         System.out.println(groups.size());
+        System.out.println(groups);
 
     }
 
