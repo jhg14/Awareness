@@ -49,6 +49,7 @@ public class Awareness {
             System.out.println("There " + (num == 1 ? "is " : "are ") + num
                                         + (num <= 1 ? "" : " different") + " room"
                                         + (num == 1 ? "." : "s."));
+            System.out.println(board.getRoomsAndDoors());
         }
 
     }

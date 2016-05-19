@@ -432,6 +432,7 @@ public class Board {
             char letter = lettersInUse.get(index);
             int numberOfDoors = numberOfDoorsInEachRoom.get(index);
             builder.append("Room " + letter + " has " + numberOfDoors + " door" + (numberOfDoors == 1 ? "." : "s."));
+            builder.append("\n");
         }
 
         return builder.toString();
