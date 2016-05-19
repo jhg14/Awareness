@@ -45,7 +45,10 @@ public class Awareness {
             board.applyInstruction(ins);
 
             System.out.println(board);
-            System.out.println("There are " + board.getNumberOfRooms() + " different rooms");
+            int num = board.getNumberOfRooms();
+            System.out.println("There " + (num == 1 ? "is " : "are ") + num
+                                        + (num <= 1 ? "" : " different") + " room"
+                                        + (num == 1 ? "." : "s."));
             System.out.println(board.getGroupsAndDoors());
 
 

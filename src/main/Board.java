@@ -22,7 +22,6 @@ public class Board {
     private List<Character> lettersInUse;
     private List<Integer> numberOfDoorsInEachGroup;
 
-
     private char[] alphabet = new char[ALPHABET_SIZE];
     private boolean[] alphaBitmap = new boolean[ALPHABET_SIZE];
 
@@ -91,6 +90,7 @@ public class Board {
         for (int i = x; i < x+width; i++) {
             for (int j = y; j < y+height; j++) {
                 tiles[i][j] = '_';
+                if (doors[i][j]) doors[i][j] = false;
             }
         }
         update();
@@ -200,25 +200,29 @@ public class Board {
             }
         }
 
-        for (int i = 0; i < x; i++) {
-            for (int j = 0; j < y; j++) {
-                if (nodes[i][j] != null) {
+        int k = (x > y) ? x : y;
+        do {
+            for (int i = 0; i < x; i++) {
+                for (int j = 0; j < y; j++) {
+                    if (nodes[i][j] != null) {
 
-                    //List<ReplacementNode> adjacent = getAdjacentTiles(i, j, nodes);
-                    List<Pair<Coord, ReplacementNode>> adjacent = getAdjacentTiles(i, j, nodes);
+                        List<Pair<Coord, ReplacementNode>> adjacent = getAdjacentTiles(i, j, nodes);
 
-                    int i_ = i;
-                    int j_ = j;
-                    adjacent.forEach((n) -> {
-                        if (n.second != null) {
-                            nodes[i_][j_].mergeAndSetGroup(n.second);
-                        }
-                    });
+                        int i_ = i;
+                        int j_ = j;
+                        adjacent.forEach((n) -> {
+                            if (n.second != null) {
+                                nodes[i_][j_].mergeAndSetGroup(n.second);
+                            }
+                        });
+                    }
                 }
             }
-        }
+            k--;
+        } while (k > 0);
 
         List<List<ReplacementNode>> groups = new ArrayList<>();
+
 
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
@@ -231,6 +235,7 @@ public class Board {
             }
         }
         this.groups = groups;
+        System.out.println(groups);
 
         //Convert the list of list of replacement nodes into first list of list of indices,
         //and at each, store the letter assigned and the number of doors in the area.
@@ -334,7 +339,7 @@ public class Board {
             int index = groups.indexOf(group);
             char letter = lettersInUse.get(index);
             int numberOfDoors = numberOfDoorsInEachGroup.get(index);
-            builder.append("Group " + letter + " has " + numberOfDoors + " door" + (numberOfDoors == 1 ? "." : "s."));
+            builder.append("Room " + letter + " has " + numberOfDoors + " door" + (numberOfDoors == 1 ? "." : "s."));
         }
 
         return builder.toString();

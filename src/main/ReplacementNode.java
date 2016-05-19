@@ -56,6 +56,12 @@ public class ReplacementNode {
 
         this.setGroup(mergedGroup);
         toMerge.setGroup(mergedGroup);
+        mergedGroup.sort((a, b) -> (b.hashCode()) - (a.hashCode()));
+    }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
     }
 
 }
