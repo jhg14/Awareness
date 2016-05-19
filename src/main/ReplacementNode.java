@@ -15,6 +15,8 @@ public class ReplacementNode {
     private int x;
     private int y;
 
+    //private char currentLetter;
+
     public ReplacementNode (int x, int y) {
         group = new ArrayList<>();
         group.add(this);
@@ -24,6 +26,14 @@ public class ReplacementNode {
 
     public int getX() {return x;}
     public int getY() {return y;}
+
+//    public void setLetter(char c) {
+//        currentLetter = c;
+//    }
+//
+//    public char getLetter() {
+//        return currentLetter;
+//    }
 
     public void setGroup(List<ReplacementNode> newGroup) {
         this.group = newGroup;

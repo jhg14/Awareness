@@ -45,6 +45,8 @@ public class Awareness {
             board.applyInstruction(ins);
 
             System.out.println(board);
+            System.out.println("There are " + board.getNumberOfRooms() + " different rooms");
+            System.out.println(board.getGroupsAndDoors());
 
 
             //Change the board

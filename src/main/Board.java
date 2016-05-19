@@ -83,11 +83,7 @@ public class Board {
                 }
             }
         }
-        markAllButWallsAsTbd();
-        removeInvalidTbdTiles();
-        detectEnclosure();
-        allocateLettersToGroups(groups);
-        updateNumberOfDoors();
+        update();
         return this;
     }
 
@@ -97,11 +93,7 @@ public class Board {
                 tiles[i][j] = '_';
             }
         }
-        markAllButWallsAsTbd();
-        removeInvalidTbdTiles();
-        detectEnclosure();
-        allocateLettersToGroups(groups);
-        updateNumberOfDoors();
+        update();
         return this;
     }
 
@@ -110,6 +102,14 @@ public class Board {
         doors[x][y] = true;
         updateNumberOfDoors();
         return this;
+    }
+
+    private void update() {
+        markAllButWallsAsTbd();
+        removeInvalidTbdTiles();
+        detectEnclosure();
+        allocateLettersToGroups(groups);
+        updateNumberOfDoors();
     }
 
     private void populateAlphabet() {
@@ -256,9 +256,9 @@ public class Board {
         //if it is next to first door, increment the door count, record where the door was, and continue until
         //all have been checked.
 
+        numberOfDoorsInEachGroup.clear();
         for (List<ReplacementNode> group: groups) {
             List<Coord> checked = new ArrayList<>();
-            System.out.println("group no: " + groups.indexOf(group));
             int doorCount = 0;
             for (ReplacementNode member: group) {
                 List<Pair<Coord, Boolean>> adjacentDoorTiles = getAdjacentTiles(member.getX(), member.getY(), doors);
@@ -267,19 +267,14 @@ public class Board {
                     if (adj.second && (!checked.contains(adj.first))) {
                         checked.add(adj.first);
                         doorCount++;
-                        System.out.println(doorCount);
                     }
                 }
             }
+
             numberOfDoorsInEachGroup.add(doorCount);
-            System.out.println(numberOfDoorsInEachGroup.get(0));
         }
-
     }
 
-    private boolean isLetter(char c) {
-        return (c >= ALPHABET_START_DEC) && (c >= ALPHABET_END_DEC) && (!(c == 'w'));
-    }
     private boolean isEdge(int i, int j) {
         return (i == 0 || j == 0 || i == (x-1) || j == (y-1));
     }
@@ -331,14 +326,15 @@ public class Board {
         return adj;
     }
 
-    private int getNumberOfRooms() {return numberOfRooms;}
+    public int getNumberOfRooms() {return numberOfRooms;}
 
-    private String getGroupsAndDoors() {
+    public String getGroupsAndDoors() {
         StringBuilder builder = new StringBuilder();
         for (List<ReplacementNode> group: groups) {
             int index = groups.indexOf(group);
             char letter = lettersInUse.get(index);
-            builder.append("Group " + letter + "has " + numberOfDoorsInEachGroup.get(index));
+            int numberOfDoors = numberOfDoorsInEachGroup.get(index);
+            builder.append("Group " + letter + " has " + numberOfDoors + " door" + (numberOfDoors == 1 ? "." : "s."));
         }
 
         return builder.toString();
