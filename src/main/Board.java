@@ -19,13 +19,15 @@ public class Board {
 
     private int numberOfRooms;
     private List<List<ReplacementNode>> groups;
+    private List<Character> lettersInUse;
+    private List<Integer> numberOfDoorsInEachGroup;
 
 
     private char[] alphabet = new char[ALPHABET_SIZE];
     private boolean[] alphaBitmap = new boolean[ALPHABET_SIZE];
 
     private char[][] tiles;
-    private boolean[][] doors;
+    private Boolean[][] doors;
     private int x;
     private int y;
 
@@ -33,16 +35,27 @@ public class Board {
         this.x = x;
         this.y = y;
         tiles = new char[x][y];
-        doors = new boolean[x][y];
+        doors = new Boolean[x][y];
+        initDoors();
 
         populateAlphabet();
         initBoard();
         numberOfRooms = 0;
+        lettersInUse = new ArrayList<>();
+        numberOfDoorsInEachGroup = new ArrayList<>();
     }
 
     private void initBoard(){
         for (int j = 0; j < tiles.length; j++){
             Arrays.fill(tiles[j], '_');
+        }
+    }
+
+    private void initDoors() {
+        for (Boolean[] row: doors) {
+            for (int j = 0; j < y; j++) {
+                row[j] = false;
+            }
         }
     }
 
@@ -74,6 +87,7 @@ public class Board {
         removeInvalidTbdTiles();
         detectEnclosure();
         allocateLettersToGroups(groups);
+        updateNumberOfDoors();
         return this;
     }
 
@@ -87,12 +101,14 @@ public class Board {
         removeInvalidTbdTiles();
         detectEnclosure();
         allocateLettersToGroups(groups);
+        updateNumberOfDoors();
         return this;
     }
 
     private Board addDoor(int x, int y) {
 
         doors[x][y] = true;
+        updateNumberOfDoors();
         return this;
     }
 
@@ -116,6 +132,7 @@ public class Board {
         for (int i = 0; i < alphaBitmap.length; i++) {
             alphaBitmap[i] = false;
         }
+        lettersInUse.clear();
     }
 
     private void markAllButWallsAsTbd() {
@@ -131,8 +148,8 @@ public class Board {
 
     /* Every space has been marked as PLACEHOLDER
        1. Anything that is an edge, mark '_'
-       2. Anything that is next to a '_', make '_'
-           2.1. Until you reach a 'w'
+       2. Anything that is next to first '_', make '_'
+           2.1. Until you reach first 'w'
        3. Repeat steps 2 & 3 until no change
      */
     public void removeInvalidTbdTiles() {
@@ -144,7 +161,7 @@ public class Board {
             }
         }
 
-        //If a tile is connected to one of these newly created '_' tiles,
+        //If first tile is connected to one of these newly created '_' tiles,
         //it must not be enclosed so replace those too.
         int change = -1;
         while (change != 0) {
@@ -187,13 +204,14 @@ public class Board {
             for (int j = 0; j < y; j++) {
                 if (nodes[i][j] != null) {
 
-                    List<ReplacementNode> adjacent = getAdjacentTiles(i, j, nodes);
+                    //List<ReplacementNode> adjacent = getAdjacentTiles(i, j, nodes);
+                    List<Pair<Coord, ReplacementNode>> adjacent = getAdjacentTiles(i, j, nodes);
 
                     int i_ = i;
                     int j_ = j;
                     adjacent.forEach((n) -> {
-                        if (n != null) {
-                            nodes[i_][j_].mergeAndSetGroup(n);
+                        if (n.second != null) {
+                            nodes[i_][j_].mergeAndSetGroup(n.second);
                         }
                     });
                 }
@@ -213,8 +231,8 @@ public class Board {
             }
         }
         this.groups = groups;
-        
-        //Convert the list of list of replacement nodes into a list of list of indices,
+
+        //Convert the list of list of replacement nodes into first list of list of indices,
         //and at each, store the letter assigned and the number of doors in the area.
 
         //Set the object's number of groups field to the correct value
@@ -229,7 +247,34 @@ public class Board {
             group.forEach((n) -> {
                 tiles[n.getX()][n.getY()] = letter;
             });
+            lettersInUse.add(letter);
         }
+    }
+
+    private void updateNumberOfDoors() {
+        //For each group, check the adjacent nodes of each member of the group,
+        //if it is next to first door, increment the door count, record where the door was, and continue until
+        //all have been checked.
+
+        for (List<ReplacementNode> group: groups) {
+            List<Coord> checked = new ArrayList<>();
+            System.out.println("group no: " + groups.indexOf(group));
+            int doorCount = 0;
+            for (ReplacementNode member: group) {
+                List<Pair<Coord, Boolean>> adjacentDoorTiles = getAdjacentTiles(member.getX(), member.getY(), doors);
+                //if true and if not seen, add to checked, increment counter
+                for (Pair<Coord, Boolean> adj: adjacentDoorTiles) {
+                    if (adj.second && (!checked.contains(adj.first))) {
+                        checked.add(adj.first);
+                        doorCount++;
+                        System.out.println(doorCount);
+                    }
+                }
+            }
+            numberOfDoorsInEachGroup.add(doorCount);
+            System.out.println(numberOfDoorsInEachGroup.get(0));
+        }
+
     }
 
     private boolean isLetter(char c) {
@@ -255,19 +300,20 @@ public class Board {
         return builder.toString();
     }
 
-    private <T> List<T> getAdjacentTiles(int x, int y, T[][] arr) {
-        List<T> adj = new ArrayList<>();
+    private <T> List<Pair<Coord, T>> getAdjacentTiles(int x, int y, T[][] arr) {
+        List<Pair<Coord, T>> coordsAndTiles = new ArrayList<>();
 
         for(int i = x-1; i <= x+1; i++) {
             for (int j = y-1; j <= y+1; j++) {
                 try {
                     if (!(x == i && y == j)) {
-                        adj.add(arr[i][j]);
+                        Pair<Coord, T> pair = new Pair<>((new Coord(i, j)), arr[i][j]);
+                        coordsAndTiles.add(pair);
                     }
                 } catch (ArrayIndexOutOfBoundsException e) {}
             }
         }
-        return adj;
+        return coordsAndTiles;
     }
 
     private List<Character> getAdjacentTilesChar(int x, int y, char[][] arr) {
@@ -283,5 +329,18 @@ public class Board {
             }
         }
         return adj;
+    }
+
+    private int getNumberOfRooms() {return numberOfRooms;}
+
+    private String getGroupsAndDoors() {
+        StringBuilder builder = new StringBuilder();
+        for (List<ReplacementNode> group: groups) {
+            int index = groups.indexOf(group);
+            char letter = lettersInUse.get(index);
+            builder.append("Group " + letter + "has " + numberOfDoorsInEachGroup.get(index));
+        }
+
+        return builder.toString();
     }
 }
