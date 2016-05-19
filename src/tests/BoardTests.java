@@ -25,6 +25,12 @@ public class BoardTests {
     private String b2
             = "______\n_wwww_\n_w__w_\n_w____\n_ww___\n______\n";
 
+    private String b3
+            = "______\n_wwww_\n_wAAw_\n_wAwww\n_wwwBw\n___www\n";
+
+    private String b4
+            = "______\n_wwww_\n_wAAw_\n_wADww\n_wwwBw\n___www\n";
+
     @Test
     public void blankBoardIsCorrectlyInitialised() {
         board = new Board(5, 7);
@@ -46,6 +52,31 @@ public class BoardTests {
         board.applyInstruction(new Instruction(Command.REMOVE, new int[]{3, 3, 2, 2}));
 
         assertThat(board.toString(), is(b2));
+    }
+
+    @Test
+    public void overlappingRoomEntryGivesCorrectResult () {
+        board = new Board(6, 6);
+        board.applyInstruction(new Instruction(Command.ADD, new int[]{1, 1, 4, 4}));
+        board.applyInstruction(new Instruction(Command.REMOVE, new int[]{3, 3, 2, 2}));
+        board.applyInstruction(new Instruction(Command.ADD, new int[]{3, 3, 3, 3}));
+
+        assertThat(board.toString(), is(b3));
+    }
+
+    @Test
+    public void applicationOfDoorGivesCorrectStringResultAndValues () {
+        board = new Board(6, 6);
+        board.applyInstruction(new Instruction(Command.ADD, new int[]{1, 1, 4, 4}));
+        board.applyInstruction(new Instruction(Command.REMOVE, new int[]{3, 3, 2, 2}));
+        board.applyInstruction(new Instruction(Command.ADD, new int[]{3, 3, 3, 3}));
+        board.applyInstruction(new Instruction(Command.DOOR, new int[]{3, 3}));
+
+        assertThat(board.toString(), is(b4));
+        assertThat(board.getNumberOfRooms(), is(2));
+        assertThat(board.getNumberOfRoomsInEachGroup().get(0), is(1));
+        assertThat(board.getNumberOfRoomsInEachGroup().get(1), is(1));
+
     }
 
 }

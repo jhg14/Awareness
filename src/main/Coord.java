@@ -3,6 +3,10 @@ package main;
 /**
  * Created by JHGWhite on 19/05/2016.
  */
+
+/*
+ * Simple class to represent a co-ordinate in some 2D array
+ */
 public class Coord {
 
     final int x;

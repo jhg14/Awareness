@@ -22,7 +22,7 @@ public class Board {
     private int numberOfRooms;
     private List<List<ReplacementNode>> groups;
     private List<Character> lettersInUse;
-    private List<Integer> numberOfDoorsInEachGroup;
+    private List<Integer> numberOfDoorsInEachRoom;
 
     private char[] alphabet = new char[ALPHABET_SIZE];
     private boolean[] alphaBitmap = new boolean[ALPHABET_SIZE];
@@ -46,7 +46,7 @@ public class Board {
         initBoard();
         numberOfRooms = 0;
         lettersInUse = new ArrayList<>();
-        numberOfDoorsInEachGroup = new ArrayList<>();
+        numberOfDoorsInEachRoom = new ArrayList<>();
     }
 
     /*
@@ -81,8 +81,6 @@ public class Board {
                 return add(args[0], args[1], args [2], args[3]);
             case REMOVE:
                 return remove(args[0], args[1], args [2], args[3]);
-            case EXIT:
-                break;
             case DOOR:
                 return addDoor(args[0], args[1]);
         }
@@ -204,7 +202,7 @@ public class Board {
      *     2.1. Unless WALL
      * 3. Repeat steps 2 & 3 until no change
      */
-    public void removeInvalidTbdTiles() {
+    private void removeInvalidTbdTiles() {
 
         //Replace edge tiles with '_'
         for (int i = 0; i < x; i++) {
@@ -267,25 +265,25 @@ public class Board {
         do {
             for (int i = 0; i < x; i++) {
                 for (int j = 0; j < y; j++) {
-                    if (nodes[i][j] != null) {
-
-                        List<Pair<Coord, ReplacementNode>> adjacent = getAdjacentTiles(i, j, nodes);
-
-                        int i_ = i;
-                        int j_ = j;
-                        adjacent.forEach((n) -> {
-                            if (n.second != null) {
-                                nodes[i_][j_].mergeAndSetGroup(n.second);
-                            }
-                        });
+                    if (nodes[i][j] == null) {
+                        continue;
                     }
+
+                    List<Pair<Coord, ReplacementNode>> adjacent = getAdjacentTiles(i, j, nodes);
+
+                    int i_ = i;
+                    int j_ = j;
+                    adjacent.forEach((n) -> {
+                        if (n.second != null) {
+                            nodes[i_][j_].mergeAndSetGroup(n.second);
+                        }
+                    });
                 }
             }
             k--;
         } while (k > 0);
 
         List<List<ReplacementNode>> groups = new ArrayList<>();
-
 
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
@@ -299,13 +297,16 @@ public class Board {
         }
         this.groups = groups;
 
-        //Convert the list of list of replacement nodes into first list of list of indices,
-        //and at each, store the letter assigned and the number of doors in the area.
-
         //Set the object's number of groups field to the correct value
         numberOfRooms = groups.size();
     }
 
+    /*
+     * For each of the distinct groups, in 'groups',
+     * assign a new letter, and add it to the array
+     * 'lettersInUse' which corresponds respectively to
+     * the letter used to denote a group in 'groups'.
+     */
     private void allocateLettersToGroups(List<List<ReplacementNode>> groups) {
         //Assign letters
         freeLetters();
@@ -318,12 +319,14 @@ public class Board {
         }
     }
 
+    /*
+     * For each group, check the adjacent nodes of each member of the group,
+     * if it is next to first door, increment the door count, record where the door was, and continue until
+     * all have been checked.
+    */
     private void updateNumberOfDoors() {
-        //For each group, check the adjacent nodes of each member of the group,
-        //if it is next to first door, increment the door count, record where the door was, and continue until
-        //all have been checked.
 
-        numberOfDoorsInEachGroup.clear();
+        numberOfDoorsInEachRoom.clear();
         for (List<ReplacementNode> group: groups) {
             List<Coord> checked = new ArrayList<>();
             int doorCount = 0;
@@ -338,10 +341,13 @@ public class Board {
                 }
             }
 
-            numberOfDoorsInEachGroup.add(doorCount);
+            numberOfDoorsInEachRoom.add(doorCount);
         }
     }
 
+    /*
+     * heuristic for edge tiles
+     */
     private boolean isEdge(int i, int j) {
         return (i == 0 || j == 0 || i == (x-1) || j == (y-1));
     }
@@ -362,6 +368,10 @@ public class Board {
         return builder.toString();
     }
 
+    /*
+     * For a given co-ordinate, return a List of Pairs of the Coordinates
+     * of its 8-way neighbours, and its value.
+     */
     private <T> List<Pair<Coord, T>> getAdjacentTiles(int x, int y, T[][] arr) {
         List<Pair<Coord, T>> coordsAndTiles = new ArrayList<>();
 
@@ -378,6 +388,12 @@ public class Board {
         return coordsAndTiles;
     }
 
+    /*
+     * For a given co-ordinate, return a List of Characters that are
+     * its 8-way neighbours.
+     * This had to be a separate function due to my design choice of using
+     * primitive 'char' for the 2D array 'tiles'.
+     */
     private List<Character> getAdjacentTilesChar(int x, int y, char[][] arr) {
         List<Character> adj = new ArrayList<>();
 
@@ -393,14 +409,28 @@ public class Board {
         return adj;
     }
 
+    /*
+     * Returns the number of distinct rooms in the world.
+     */
     public int getNumberOfRooms() {return numberOfRooms;}
 
-    public String getGroupsAndDoors() {
+    /*
+     * Returns the list of the number of doors in each room
+     */
+    public List<Integer> getNumberOfRoomsInEachGroup() {
+        return numberOfDoorsInEachRoom;
+    }
+
+    /*
+     * Returns a String consisting of the groups, their respective letter,
+     * and the number of doors in that room.
+     */
+    public String getRoomsAndDoors() {
         StringBuilder builder = new StringBuilder();
         for (List<ReplacementNode> group: groups) {
             int index = groups.indexOf(group);
             char letter = lettersInUse.get(index);
-            int numberOfDoors = numberOfDoorsInEachGroup.get(index);
+            int numberOfDoors = numberOfDoorsInEachRoom.get(index);
             builder.append("Room " + letter + " has " + numberOfDoors + " door" + (numberOfDoors == 1 ? "." : "s."));
         }
 

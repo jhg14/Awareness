@@ -8,6 +8,11 @@ import java.util.Set;
 /**
  * Created by JHGWhite on 18/05/2016.
  */
+
+/*
+ * This class is to represents tiles that have been
+ * identified as being part of an enclosed space.
+ */
 public class ReplacementNode {
 
     private List<ReplacementNode> group;
@@ -27,14 +32,6 @@ public class ReplacementNode {
     public int getX() {return x;}
     public int getY() {return y;}
 
-//    public void setLetter(char c) {
-//        currentLetter = c;
-//    }
-//
-//    public char getLetter() {
-//        return currentLetter;
-//    }
-
     public void setGroup(List<ReplacementNode> newGroup) {
         this.group = newGroup;
     }
@@ -43,6 +40,12 @@ public class ReplacementNode {
         return group;
     }
 
+
+    /*
+     * This method is used to merge 2 nodes' groups together.
+     * This will be iterated until all nodes of a group share the
+     * same information.
+     */
     public void mergeAndSetGroup (ReplacementNode toMerge) {
         List<ReplacementNode> mergedGroup = new ArrayList<>();
 
