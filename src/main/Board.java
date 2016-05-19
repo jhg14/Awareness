@@ -15,6 +15,10 @@ public class Board {
     private static final int ALPHABET_END_DEC = 90;
 
     private static final char PLACEHOLDER = '%';
+    private static final char DOOR = 'D';
+
+    private int numberOfRooms;
+    private List<List<ReplacementNode>> groups;
 
 
     private char[] alphabet = new char[ALPHABET_SIZE];
@@ -25,18 +29,15 @@ public class Board {
     private int x;
     private int y;
 
-//    private World world;
-
     public Board(int x, int y){
         this.x = x;
         this.y = y;
         tiles = new char[x][y];
-
-        //world = new World(x,y);
-
         doors = new boolean[x][y];
+
         populateAlphabet();
         initBoard();
+        numberOfRooms = 0;
     }
 
     private void initBoard(){
@@ -69,13 +70,10 @@ public class Board {
                 }
             }
         }
-        //detectEnclosure();
-        //replaceEnclosure();
-        //updateSpaces();
         markAllButWallsAsTbd();
         removeInvalidTbdTiles();
-        allocateEnclosure();
-
+        detectEnclosure();
+        allocateLettersToGroups(groups);
         return this;
     }
 
@@ -83,13 +81,12 @@ public class Board {
         for (int i = x; i < x+width; i++) {
             for (int j = y; j < y+height; j++) {
                 tiles[i][j] = '_';
-                //world.setTile(i, j, '_');
             }
         }
         markAllButWallsAsTbd();
         removeInvalidTbdTiles();
-        allocateEnclosure();
-
+        detectEnclosure();
+        allocateLettersToGroups(groups);
         return this;
     }
 
@@ -175,25 +172,7 @@ public class Board {
 
     }
 
-    private void updateSpaces() {
-
-        int changes = -1;
-
-        while (changes != 0) {
-            changes = 0;
-            for (int i = 0; i < x; i++){
-                for (int j = 0; j < y; j++) {
-                    // NEED TO MAKE ADJACENT TILE FUNCTION ACCEPT THE ARRAY OF CHARS AS ARRAY OF CHARACTERS
-                    if (getAdjacentTilesChar(i, j, tiles).contains('_') && (tiles[i][j] != '_') && (tiles[i][j] != 'w')){
-                        tiles[i][j] = '_';
-                        changes++;
-                    }
-                }
-            }
-        }
-    }
-
-    private void allocateEnclosure() {
+    private void detectEnclosure() {
 
         ReplacementNode[][] nodes = new ReplacementNode[x][y];
         for (int i = 0; i < x; i++) {
@@ -233,28 +212,23 @@ public class Board {
                 }
             }
         }
+        this.groups = groups;
+        
+        //Convert the list of list of replacement nodes into a list of list of indices,
+        //and at each, store the letter assigned and the number of doors in the area.
 
+        //Set the object's number of groups field to the correct value
+        numberOfRooms = groups.size();
+    }
 
-
-        freeLetters();
+    private void allocateLettersToGroups(List<List<ReplacementNode>> groups) {
         //Assign letters
+        freeLetters();
         for (List<ReplacementNode> group: groups) {
             char letter = getLetter();
             group.forEach((n) -> {
                 tiles[n.getX()][n.getY()] = letter;
             });
-        }
-    }
-
-    private void replaceEnclosure() {
-        char letter = getLetter();
-        for (int i = 0; i < x; i++) {
-            for (int j = 0; j < y; j++) {
-                if (tiles[i][j] == PLACEHOLDER) {
-                    tiles[i][j] = letter;
-                    //world.setTile(i, j, letter);
-                }
-            }
         }
     }
 
@@ -270,7 +244,11 @@ public class Board {
         StringBuilder builder = new StringBuilder();
         for (int j = 0; j < y; j++){
             for (int i = 0; i < x; i++){
-                builder.append(tiles[i][j]);
+                if (doors[i][j]) {
+                    builder.append(DOOR);
+                } else {
+                    builder.append(tiles[i][j]);
+                }
             }
             builder.append('\n');
         }
@@ -286,8 +264,7 @@ public class Board {
                     if (!(x == i && y == j)) {
                         adj.add(arr[i][j]);
                     }
-                } catch (ArrayIndexOutOfBoundsException e) {
-                }
+                } catch (ArrayIndexOutOfBoundsException e) {}
             }
         }
         return adj;
@@ -307,5 +284,4 @@ public class Board {
         }
         return adj;
     }
-
 }
